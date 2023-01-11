@@ -1,0 +1,31 @@
+# -*- coding: utf-8 -*-
+# Created by Enrique Plata
+version: '3.9'
+
+networks:
+  default:
+    driver: bridge
+    name: ${NETWORK_NAME}
+    ipam:
+      driver: default
+      config:
+        - subnet: ${NETWORK_SUBNET}
+
+services:
+  jupyter-server:
+    container_name: jupyter-server
+    environment:
+      - SNOWFLAKE_ACCOUNT=${SNOWFLAKE_ACCOUNT}
+      - SNOWFLAKE_USER=${SNOWFLAKE_USER}
+      - SNOWFLAKE_PASSWORD=${SNOWFLAKE_PASSWORD}
+      - SNOWFLAKE_VW=${SNOWFLAKE_VW}
+      - SNOWFLAKE_DB=${SNOWFLAKE_DB}
+    build:
+      context: ./server/
+      dockerfile: Dockerfile
+      target: runner
+    image: snowpark/jupyter-server
+    volumes:
+      - ./server/src:/opt/notebooks
+    ports:
+      - "8888:8888"
